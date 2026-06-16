@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cronograma del Analista Funcional · Dashboard Interactivo</title>
+<meta name="description" content="Dashboard interactivo con las 9 fases del ciclo del Analista Funcional: tareas, herramientas, entregables y consejos prácticos. Desde el primer contacto con el cliente hasta el cierre del proyecto." />
+<meta name="author" content="Luciana" />
+<meta name="theme-color" content="#3b82f6" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Cronograma del Analista Funcional · Dashboard Interactivo" />
+<meta property="og:description" content="Las 9 fases del ciclo del Analista Funcional, con tareas, herramientas y entregables. Recorrido completo desde el primer contacto con el cliente hasta el cierre del proyecto." />
+<meta property="og:locale" content="es_AR" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cronograma del Analista Funcional · Dashboard Interactivo" />
+<meta name="twitter:description" content="Las 9 fases del ciclo del Analista Funcional, con tareas, herramientas y entregables." />
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --bg-elev: #ffffff;
+    --bg-soft: #eef0f7;
+    --text: #1a1d29;
+    --text-soft: #5b6173;
+    --text-mute: #8a90a3;
+    --border: #e3e6ef;
+    --shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.06);
+    --shadow-lg: 0 20px 50px rgba(15,23,42,.12);
+    --radius: 14px;
+    --radius-sm: 10px;
+
+    --c-f0: #06b6d4;
+    --c-f1: #8b5cf6;
+    --c-f2: #f97316;
+    --c-f3: #3b82f6;
+    --c-f4: #10b981;
+    --c-f5: #ec4899;
+    --c-f6: #84cc16;
+    --c-f7: #ef4444;
+    --c-f8: #f59e0b;
+  }
+  [data-theme="dark"] {
+    --bg: #0f1220;
+    --bg-elev: #181b2c;
+    --bg-soft: #1f2338;
+    --text: #f1f3fb;
+    --text-soft: #b6bbd1;
+    --text-mute: #7e85a0;
+    --border: #2a2f47;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    transition: background .25s ease, color .25s ease;
+  }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 28px 24px 80px; }
+
+  /* ===== Header ===== */
+  header.hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .hero-text h1 {
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+    margin: 0 0 6px;
+    letter-spacing: -.02em;
+  }
+  .hero-text p {
+    margin: 0;
+    color: var(--text-soft);
+    max-width: 720px;
+  }
+  .hero-actions { display: flex; gap: 10px; align-items: center; }
+
+  .theme-toggle {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: .9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform .12s ease, box-shadow .15s ease, background .15s ease;
+    box-shadow: var(--shadow);
+  }
+  .theme-toggle:hover { transform: translateY(-1px); }
+
+  /* ===== Summary cards ===== */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .summary .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary .card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--accent, var(--c-f3));
+  }
+  .summary .card .label {
+    font-size: .78rem;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+  }
+  .summary .card .value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+  .summary .card .sub {
+    font-size: .82rem;
+    color: var(--text-soft);
+  }
+
+  /* ===== Filters ===== */
+  .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 22px;
+    padding: 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .filters input, .filters select {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: .92rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .filters input:focus, .filters select:focus {
+    border-color: var(--c-f3);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+  }
+  .filters input { flex: 1; min-width: 220px; }
+  .filters select { min-width: 180px; }
+  .filters .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background .15s ease, color .15s ease;
+  }
+  .filters .reset-btn:hover { background: var(--bg-soft); color: var(--text); }
+
+  /* ===== Timeline ===== */
+  .timeline-wrap {
+    position: relative;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    overflow-x: auto;
+  }
+  .timeline-title {
+    font-size: .82rem;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .timeline {
+    display: flex;
+    gap: 14px;
+    position: relative;
+    padding-top: 8px;
+    min-width: max-content;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 38px;
+    left: 24px;
+    right: 24px;
+    height: 2px;
+    background: linear-gradient(90deg,
+      var(--c-f0), var(--c-f1), var(--c-f2), var(--c-f3),
+      var(--c-f4), var(--c-f5), var(--c-f6), var(--c-f7), var(--c-f8));
+    border-radius: 2px;
+    opacity: .55;
+  }
+  .phase-node {
+    flex: 1 1 0;
+    min-width: 128px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: center;
+    color: var(--text);
+    font-family: inherit;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: transform .15s ease;
+  }
+  .phase-node:hover { transform: translateY(-2px); }
+  .phase-node .dot {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--bg-elev);
+    border: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    position: relative;
+    z-index: 1;
+    transition: background .2s ease, transform .15s ease;
+  }
+  .phase-node[aria-selected="true"] .dot {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.08);
+  }
+  .phase-node .num {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .phase-node .name {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text);
+    max-width: 130px;
+    line-height: 1.25;
+  }
+  .phase-node .dur {
+    font-size: .72rem;
+    color: var(--text-mute);
+  }
+  .phase-node.dim { opacity: .35; }
+  .phase-node .progress-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) calc(var(--p,0) * 1%), transparent 0);
+    -webkit-mask: radial-gradient(circle, transparent 26px, #000 27px);
+            mask: radial-gradient(circle, transparent 26px, #000 27px);
+    transition: background .3s ease;
+  }
+
+  /* ===== Phase detail panel ===== */
+  .detail {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    margin-bottom: 32px;
+    position: relative;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .detail::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: var(--accent);
+  }
+  .detail-header {
+    padding: 26px 28px 18px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-header .left { display: flex; gap: 16px; align-items: center; }
+  .detail-header .badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  .detail-header h2 {
+    margin: 0 0 4px;
+    font-size: 1.5rem;
+    letter-spacing: -.01em;
+  }
+  .detail-header .meta {
+    color: var(--text-soft);
+    font-size: .92rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
+  .detail-header .meta .chip {
+    background: var(--bg-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .82rem;
+    color: var(--text-soft);
+  }
+
+  .detail-nav { display: flex; gap: 6px; align-items: center; }
+  .detail-nav button {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background .15s ease, transform .12s ease;
+  }
+  .detail-nav button:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .detail-body {
+    padding: 24px 28px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  @media (max-width: 880px) {
+    .detail-body { grid-template-columns: 1fr; }
+  }
+
+  .panel h3 {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-mute);
+    margin: 0 0 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .objective {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-left: 3px solid var(--accent);
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: .95rem;
+  }
+
+  .tasks { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .tasks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    transition: background .15s ease;
+    cursor: pointer;
+  }
+  .tasks li:hover { background: color-mix(in srgb, var(--accent) 10%, var(--bg-soft)); }
+  .tasks li input {
+    margin-top: 2px;
+    accent-color: var(--accent);
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .tasks li label {
+    cursor: pointer;
+    font-size: .92rem;
+    color: var(--text);
+    flex: 1;
+  }
+  .tasks li.done label { text-decoration: line-through; color: var(--text-mute); }
+
+  .tools-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .tools-table th, .tools-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tools-table th {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-mute);
+    font-weight: 600;
+  }
+  .tools-table tr:last-child td { border-bottom: none; }
+  .tools-table td.tool { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .tools-table td.purpose { color: var(--text-soft); }
+  .tools-table tr.hl { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+  .deliverable {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-radius: var(--radius-sm);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px dashed var(--accent);
+  }
+  .deliverable .icon { font-size: 1.4rem; }
+  .deliverable .lbl {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-mute);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .deliverable .txt { color: var(--text); font-size: .93rem; font-weight: 500; }
+
+  /* ===== Sections (stack + tips) ===== */
+  .section {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    box-shadow: var(--shadow);
+    margin-bottom: 22px;
+  }
+  .section h2 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    letter-spacing: -.01em;
+  }
+  .section p.sub {
+    margin: 0 0 18px;
+    color: var(--text-soft);
+    font-size: .93rem;
+  }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .stack-card {
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .stack-card .cat { font-size: .88rem; color: var(--text-mute); margin-bottom: 4px; font-weight: 600; }
+  .stack-card .items { font-size: .95rem; color: var(--text); }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .tip {
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    border-left: 3px solid var(--c-f4);
+  }
+  .tip:nth-child(2n) { border-left-color: var(--c-f1); }
+  .tip:nth-child(3n) { border-left-color: var(--c-f2); }
+  .tip:nth-child(4n) { border-left-color: var(--c-f5); }
+  .tip:nth-child(5n) { border-left-color: var(--c-f7); }
+  .tip h4 { margin: 0 0 6px; font-size: 1rem; }
+  .tip p { margin: 0; color: var(--text-soft); font-size: .9rem; }
+
+  .closing {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--c-f1) 15%, var(--bg-elev)),
+      color-mix(in srgb, var(--c-f3) 15%, var(--bg-elev)));
+    border-radius: var(--radius);
+    padding: 28px 30px;
+    border: 1px solid var(--border);
+    margin-bottom: 22px;
+  }
+  .closing h2 { margin: 0 0 10px; font-size: 1.2rem; }
+  .closing p { margin: 0; color: var(--text-soft); font-size: .98rem; line-height: 1.65; }
+
+  footer {
+    text-align: center;
+    color: var(--text-mute);
+    font-size: .82rem;
+    padding: 24px 0 0;
+  }
+
+  /* ===== Edit controls (add/remove) ===== */
+  .tasks li { position: relative; padding-right: 36px; }
+  .tasks li .remove-btn,
+  .tools-table .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .tasks li .remove-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+  }
+  .tasks li:hover .remove-btn,
+  .tasks li:focus-within .remove-btn { opacity: 1; }
+  .tasks li .remove-btn:hover,
+  .tools-table .remove-btn:hover { background: color-mix(in srgb, var(--c-f7) 18%, transparent); color: var(--c-f7); }
+
+  .tools-table td.remove-cell { width: 36px; text-align: center; padding: 6px 4px; }
+
+  .add-form {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .add-form input {
+    flex: 1;
+    min-width: 140px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    font-size: .9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .add-form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  .add-form .add-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font-size: .88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .12s ease, filter .15s ease;
+    white-space: nowrap;
+  }
+  .add-form .add-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+  .add-form .add-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .add-form .add-btn.icon-only {
+    width: 38px;
+    padding: 0;
+    font-size: 1.3rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .item-flag {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  /* utility */
+  .fade-in { animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .no-results {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-mute);
+    font-size: .95rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hero">
+    <div class="hero-text">
+      <h1>Análisis Funcional · Cronograma del proyecto</h1>
+      <p>Desde el primer contacto con el cliente hasta la entrega en producción. Recorré las 9 fases del ciclo del Analista Funcional, sus tareas y herramientas recomendadas.</p>
+    </div>
+    <div class="hero-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="summary" id="summary"></section>
+
+  <section class="filters" aria-label="Filtros">
+    <input type="search" id="searchInput" placeholder="🔎 Buscar tareas o herramientas…" />
+    <select id="phaseFilter">
+      <option value="">Todas las fases</option>
+    </select>
+    <select id="toolFilter">
+      <option value="">Todas las herramientas</option>
+    </select>
+    <button class="reset-btn" id="resetBtn">Limpiar filtros</button>
+  </section>
+
+  <section class="timeline-wrap" aria-label="Línea de tiempo de fases">
+    <div class="timeline-title">Línea de tiempo del proyecto</div>
+    <div class="timeline" id="timeline" role="tablist"></div>
+  </section>
+
+  <section class="detail" id="detail" aria-live="polite"></section>
+
+  <section class="section">
+    <h2>🧰 Stack de herramientas resumido</h2>
+    <p class="sub">Herramientas que un Analista Funcional debería dominar o, al menos, conocer en profundidad. La elección concreta depende del cliente, del equipo y del presupuesto.</p>
+    <div class="stack-grid" id="stackGrid"></div>
+  </section>
+
+  <section class="section">
+    <h2>💡 Consejos prácticos que valen más que la teoría</h2>
+    <p class="sub">Lecciones que la experiencia demuestra como críticas para el éxito del proyecto.</p>
+    <div class="tips-grid" id="tipsGrid"></div>
+  </section>
+
+  <section class="closing">
+    <h2>🎓 Reflexión final</h2>
+    <p>El éxito de un proyecto de software no depende solo de la calidad técnica del producto, sino de cuán bien se entendieron las necesidades, se gestionaron las expectativas y se mantuvo la comunicación durante todo el ciclo. El Analista Funcional es la pieza que conecta esos tres mundos: <strong>cliente, negocio y tecnología</strong>.</p>
+  </section>
+
+  <footer>Cronograma integral del Analista Funcional · Dashboard interactivo</footer>
+</div>
+
+<script>
+const PHASES = [
+  {
+    id: 0, num: "Fase 0", icon: "🔍", color: "var(--c-f0)",
+    name: "Pre-proyecto / Primer contacto",
+    duration: "1 a 2 semanas", weeks: [1, 2],
+    objective: "Entender el contexto antes de comprometer alcance.",
+    tasks: [
+      "Reunión exploratoria inicial (informal, sin compromiso).",
+      "Identificación de stakeholders (sponsor, key users, decisores técnicos, áreas impactadas).",
+      "Entendimiento del negocio: ¿qué hace el cliente?, ¿qué problema busca resolver?, ¿por qué ahora?",
+      "Definición preliminar de alcance, restricciones, presupuesto y plazos esperados.",
+      "Elaboración de propuesta / SOW (Statement of Work)."
+    ],
+    tools: [
+      { name: "Outlook / Google Calendar", purpose: "Agendar reuniones" },
+      { name: "Teams / Zoom / Meet", purpose: "Videollamadas con el cliente" },
+      { name: "Word / Google Docs / Notion", purpose: "Minutas y propuesta inicial" },
+      { name: "OneNote / Obsidian", purpose: "Notas personales del analista" }
+    ],
+    deliverable: "Documento de propuesta + minuta de reunión inicial."
+  },
+  {
+    id: 1, num: "Fase 1", icon: "🎯", color: "var(--c-f1)",
+    name: "Relevamiento de necesidades",
+    duration: "2 a 4 semanas", weeks: [2, 4],
+    objective: "Entender en profundidad qué necesita el cliente y cómo trabaja hoy.",
+    tasks: [
+      "Entrevistas individuales a usuarios clave (operativos, mandos medios, dirección).",
+      "Workshops grupales para validar entendimiento y resolver contradicciones entre áreas.",
+      "Análisis de documentación existente (manuales, procedimientos, sistemas legacy).",
+      "Relevamiento del proceso AS-IS (cómo se trabaja hoy).",
+      "Definición preliminar del TO-BE (cómo debería trabajarse).",
+      "Identificación de pain points y oportunidades de mejora.",
+      "Listado preliminar de requerimientos funcionales y no funcionales."
+    ],
+    tools: [
+      { name: "Miro / Mural / FigJam", purpose: "Workshops colaborativos" },
+      { name: "Bizagi Modeler / Lucidchart / Draw.io", purpose: "Diagramas de procesos (BPMN)" },
+      { name: "Confluence / Notion / SharePoint", purpose: "Repositorio documental" },
+      { name: "Loom", purpose: "Grabar explicaciones para revisar después" },
+      { name: "Forms / Typeform", purpose: "Relevamiento masivo de usuarios" }
+    ],
+    deliverable: "Documento de relevamiento + diagramas AS-IS / TO-BE."
+  },
+  {
+    id: 2, num: "Fase 2", icon: "🚀", color: "var(--c-f2)",
+    name: "Reunión de Kick-off",
+    duration: "1 sem. de prep. + 1 reunión", weeks: [1, 1],
+    objective: "Dar arranque formal al proyecto con todos los actores alineados.",
+    tasks: [
+      "Preparar presentación de kick-off (objetivos, alcance, equipo, cronograma macro, riesgos, plan de comunicación, governance).",
+      "Validar alcance final con el sponsor.",
+      "Definir matriz RACI (Responsible, Accountable, Consulted, Informed).",
+      "Acordar canales de comunicación y cadencias de reuniones.",
+      "Acordar criterios de éxito del proyecto."
+    ],
+    tools: [
+      { name: "PowerPoint / Google Slides / Canva", purpose: "Presentación de kick-off" },
+      { name: "MS Project / Smartsheet / GanttPRO", purpose: "Cronograma macro" },
+      { name: "Confluence", purpose: "Fuente única de verdad del proyecto" }
+    ],
+    deliverable: "Acta de kick-off firmada + plan de proyecto."
+  },
+  {
+    id: 3, num: "Fase 3", icon: "📐", color: "var(--c-f3)",
+    name: "Análisis funcional y documentación",
+    duration: "3 a 6 semanas", weeks: [3, 6],
+    objective: "Transformar necesidades en especificaciones accionables para el equipo de desarrollo.",
+    tasks: [
+      "Diseño del proceso TO-BE detallado.",
+      "Redacción de historias de usuario con criterios de aceptación (formato Gherkin: Given / When / Then).",
+      "Definición de reglas de negocio.",
+      "Diagramas: casos de uso, secuencia, flujo, entidad-relación (a alto nivel).",
+      "Wireframes y mockups para validar UX con el cliente antes de desarrollar.",
+      "Definición de requerimientos no funcionales (performance, seguridad, integraciones, compliance).",
+      "Validación iterativa con el cliente."
+    ],
+    tools: [
+      { name: "Figma / Balsamiq / Adobe XD", purpose: "Wireframes y prototipos UX" },
+      { name: "Lucidchart / Draw.io / Enterprise Architect", purpose: "Diagramas UML/BPMN" },
+      { name: "Confluence / Notion", purpose: "Documentación funcional" },
+      { name: "Jira / Azure DevOps", purpose: "Carga inicial de historias de usuario" }
+    ],
+    deliverable: "Documento de especificación funcional (FSD) + prototipos validados."
+  },
+  {
+    id: 4, num: "Fase 4", icon: "📋", color: "var(--c-f4)",
+    name: "Planificación y armado del backlog",
+    duration: "1 a 2 semanas", weeks: [1, 2],
+    objective: "Convertir el análisis en un plan de trabajo ejecutable.",
+    tasks: [
+      "Carga del product backlog completo en la herramienta.",
+      "Priorización con técnicas como MoSCoW (Must / Should / Could / Won't), RICE o Valor vs. Esfuerzo.",
+      "Estimación con el equipo de desarrollo (Planning Poker, T-shirt sizing).",
+      "Definición del MVP (Producto Mínimo Viable).",
+      "Armado del roadmap y de los sprints iniciales.",
+      "Definición del Definition of Ready (DoR) y Definition of Done (DoD)."
+    ],
+    tools: [
+      { name: "Jira / Azure DevOps / ClickUp / Monday", purpose: "Gestión del backlog" },
+      { name: "Planning Poker online", purpose: "Estimaciones con el equipo" },
+      { name: "Roadmunk / Aha! / Productboard", purpose: "Roadmaps visuales" }
+    ],
+    deliverable: "Backlog priorizado + roadmap + plan de sprints."
+  },
+  {
+    id: 5, num: "Fase 5", icon: "⚙️", color: "var(--c-f5)",
+    name: "Acompañamiento al desarrollo",
+    duration: "Según cantidad de sprints (~2 sem. c/u)", weeks: [4, 12],
+    objective: "Asegurar que lo que se construye sea exactamente lo que el cliente necesita.",
+    tasks: [
+      "Refinamiento del backlog (grooming) antes de cada sprint.",
+      "Participar en Sprint Planning, Dailies, Reviews y Retrospectivas.",
+      "Resolver dudas funcionales del equipo de desarrollo en el día a día.",
+      "Validar entregables al final de cada sprint con el cliente.",
+      "Gestionar cambios de alcance (control de cambios formal).",
+      "Mantener la trazabilidad: requerimiento → historia → desarrollo → test."
+    ],
+    tools: [
+      { name: "Jira / Azure DevOps", purpose: "Seguimiento de sprints y tickets" },
+      { name: "Slack / Teams", purpose: "Comunicación diaria del equipo" },
+      { name: "Confluence", purpose: "Actas de review y retrospectivas" },
+      { name: "Miro", purpose: "Retros visuales (Start/Stop/Continue, Mad/Sad/Glad)" }
+    ],
+    deliverable: "Incrementos funcionales validados al final de cada sprint."
+  },
+  {
+    id: 6, num: "Fase 6", icon: "✅", color: "var(--c-f6)",
+    name: "Testing y UAT",
+    duration: "2 a 4 semanas", weeks: [2, 4],
+    objective: "Validar que lo desarrollado cumple los criterios de aceptación.",
+    tasks: [
+      "Definir estrategia y plan de pruebas.",
+      "Redactar casos de prueba funcionales (tarea compartida con QA).",
+      "Coordinar UAT con el cliente: preparar ambiente, datos de prueba, capacitación previa.",
+      "Gestionar el registro y seguimiento de bugs.",
+      "Validar la resolución de incidencias antes del pase a producción.",
+      "Obtener aprobación formal de UAT (sign-off)."
+    ],
+    tools: [
+      { name: "Jira + Zephyr / Xray / TestRail", purpose: "Gestión de casos de prueba" },
+      { name: "Postman / Swagger", purpose: "Validar APIs" },
+      { name: "Excel / Google Sheets", purpose: "Matrices de trazabilidad" },
+      { name: "Loom", purpose: "Grabar bugs reproducidos" }
+    ],
+    deliverable: "Acta de UAT aprobada + matriz de trazabilidad de casos cerrados."
+  },
+  {
+    id: 7, num: "Fase 7", icon: "🚦", color: "var(--c-f7)",
+    name: "Despliegue a producción (Go-Live)",
+    duration: "1 a 2 semanas", weeks: [1, 2],
+    objective: "Poner el sistema en uso real sin sobresaltos.",
+    tasks: [
+      "Armar el plan de go-live: checklist, rollback plan, ventana de despliegue, comunicación.",
+      "Coordinar con infraestructura / DevOps la fecha y hora del pase.",
+      "Preparar documentación de usuario final (manuales, FAQs, videos).",
+      "Capacitar a los usuarios finales (presencial, virtual o asincrónico).",
+      "Definir el circuito de soporte post go-live (a quién se reportan los problemas)."
+    ],
+    tools: [
+      { name: "Confluence / SharePoint", purpose: "Manuales de usuario" },
+      { name: "Loom / Camtasia", purpose: "Videos tutoriales" },
+      { name: "PowerPoint", purpose: "Material de capacitación" },
+      { name: "Jira Service Management / Zendesk / Freshdesk", purpose: "Soporte post go-live" }
+    ],
+    deliverable: "Sistema en producción + manuales + usuarios capacitados."
+  },
+  {
+    id: 8, num: "Fase 8", icon: "🏁", color: "var(--c-f8)",
+    name: "Hypercare y cierre del proyecto",
+    duration: "2 a 4 semanas", weeks: [2, 4],
+    objective: "Estabilizar el sistema y cerrar formalmente el proyecto.",
+    tasks: [
+      "Hypercare: soporte intensivo durante las primeras semanas post go-live.",
+      "Atender y priorizar incidencias críticas.",
+      "Documentar lecciones aprendidas con el equipo y el cliente.",
+      "Hacer retrospectiva final del proyecto.",
+      "Transferir la operación al equipo de soporte / mantenimiento.",
+      "Cierre formal: acta de cierre firmada por el cliente."
+    ],
+    tools: [
+      { name: "Jira / Service Desk", purpose: "Gestión de incidencias" },
+      { name: "Confluence", purpose: "Lecciones aprendidas y traspaso operativo" },
+      { name: "Miro", purpose: "Retrospectiva final del proyecto" }
+    ],
+    deliverable: "Acta de cierre + documento de lecciones aprendidas + handover a soporte."
+  }
+];
+
+const STACK = [
+  { cat: "📚 Documentación colaborativa", items: "Confluence, Notion, SharePoint" },
+  { cat: "🗂️ Gestión de backlog / proyecto", items: "Jira, Azure DevOps, ClickUp" },
+  { cat: "📊 Diagramación", items: "Lucidchart, Draw.io, Bizagi, Miro" },
+  { cat: "🎨 Prototipado UX", items: "Figma, Balsamiq, Adobe XD" },
+  { cat: "💬 Comunicación", items: "Teams, Slack, Zoom, Meet" },
+  { cat: "🤝 Workshops virtuales", items: "Miro, Mural, FigJam" },
+  { cat: "🧪 Testing", items: "Zephyr, Xray, TestRail, Postman" },
+  { cat: "📈 Cronograma macro", items: "MS Project, Smartsheet, GanttPRO" }
+];
+
+const TIPS = [
+  { title: "📝 Documentá todo, pero priorizá lo accionable", body: "Un documento de 100 páginas que nadie lee es peor que una página de Confluence con los acuerdos clave. La utilidad de la documentación se mide por cuánto se usa, no por cuánto pesa." },
+  { title: "✅ Validá temprano y seguido", body: "Es mucho más barato corregir un wireframe que un desarrollo terminado. Cuanto antes detectes un malentendido con el cliente, menos costará corregirlo." },
+  { title: "📋 Las minutas son tu seguro de vida", body: "Después de cada reunión: qué se habló, qué se decidió, quién hace qué y para cuándo. Sin minuta, todo decisión es 'recuerdo' y los recuerdos cambian con el tiempo." },
+  { title: "🌉 El AF es puente, no obstáculo", body: "Tu rol es destrabar al equipo técnico y al cliente, no convertirte en un cuello de botella entre ambos. Facilitá la comunicación, no la centralices." },
+  { title: "⚠️ Gestioná los cambios formalmente", body: "Sin control de cambios, el alcance se infla solo (scope creep). Todo cambio debe analizarse en impacto (tiempo, costo, calidad) y aprobarse formalmente antes de ejecutarse." }
+];
+
+/* ===== State ===== */
+const STORAGE_KEY = "af-dashboard-state-v2";
+const LEGACY_KEY = "af-dashboard-state-v1";
+const state = loadState();
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      parsed.phaseData = parsed.phaseData || {};
+      parsed.done = parsed.done || {};
+      parsed.filters = parsed.filters || { q: "", phase: "", tool: "" };
+      return parsed;
+    }
+    const oldRaw = localStorage.getItem(LEGACY_KEY);
+    if (oldRaw) {
+      const old = JSON.parse(oldRaw);
+      const migrated = {
+        theme: old.theme || "light",
+        selected: typeof old.selected === "number" ? old.selected : 0,
+        filters: old.filters || { q: "", phase: "", tool: "" },
+        phaseData: {},
+        done: {}
+      };
+      if (old.done) {
+        Object.entries(old.done).forEach(([k, v]) => {
+          if (!v) return;
+          const m = k.match(/^(\d+)::(\d+)$/);
+          if (m) migrated.done[`p${m[1]}-t${m[2]}`] = true;
+        });
+      }
+      return migrated;
+    }
+  } catch (e) {}
+  return { theme: "light", selected: 0, done: {}, filters: { q: "", phase: "", tool: "" }, phaseData: {} };
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+/* ===== Phase data accessors (defaults + user overrides) ===== */
+function defaultTaskId(pid, i)  { return `p${pid}-t${i}`; }
+function defaultToolId(pid, i)  { return `p${pid}-w${i}`; }
+function isCustomId(id)         { return id.startsWith("c-"); }
+function newId(prefix)          { return `c-${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`; }
+
+function getPhaseTasks(pid) {
+  if (state.phaseData[pid] && state.phaseData[pid].tasks) return state.phaseData[pid].tasks;
+  const phase = PHASES.find(p => p.id === pid);
+  return phase.tasks.map((t, i) => ({ id: defaultTaskId(pid, i), text: t }));
+}
+function getPhaseTools(pid) {
+  if (state.phaseData[pid] && state.phaseData[pid].tools) return state.phaseData[pid].tools;
+  const phase = PHASES.find(p => p.id === pid);
+  return phase.tools.map((t, i) => ({ id: defaultToolId(pid, i), name: t.name, purpose: t.purpose }));
+}
+function ensurePhaseTasks(pid) {
+  if (!state.phaseData[pid]) state.phaseData[pid] = {};
+  if (!state.phaseData[pid].tasks) state.phaseData[pid].tasks = getPhaseTasks(pid).map(t => ({ ...t }));
+  return state.phaseData[pid].tasks;
+}
+function ensurePhaseTools(pid) {
+  if (!state.phaseData[pid]) state.phaseData[pid] = {};
+  if (!state.phaseData[pid].tools) state.phaseData[pid].tools = getPhaseTools(pid).map(t => ({ ...t }));
+  return state.phaseData[pid].tools;
+}
+function addTaskTo(pid, text) {
+  const tasks = ensurePhaseTasks(pid);
+  tasks.push({ id: newId("t"), text });
+  saveState();
+}
+function removeTaskFrom(pid, taskId) {
+  const tasks = ensurePhaseTasks(pid);
+  const idx = tasks.findIndex(t => t.id === taskId);
+  if (idx >= 0) tasks.splice(idx, 1);
+  delete state.done[taskId];
+  saveState();
+}
+function addToolTo(pid, name, purpose) {
+  const tools = ensurePhaseTools(pid);
+  tools.push({ id: newId("w"), name, purpose });
+  saveState();
+}
+function removeToolFrom(pid, toolId) {
+  const tools = ensurePhaseTools(pid);
+  const idx = tools.findIndex(t => t.id === toolId);
+  if (idx >= 0) tools.splice(idx, 1);
+  saveState();
+}
+
+/* ===== Theme ===== */
+function applyTheme() {
+  document.documentElement.setAttribute("data-theme", state.theme);
+  document.getElementById("themeIcon").textContent = state.theme === "dark" ? "☀️" : "🌙";
+  document.getElementById("themeLabel").textContent = state.theme === "dark" ? "Modo claro" : "Modo oscuro";
+}
+document.getElementById("themeToggle").addEventListener("click", () => {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  applyTheme(); saveState();
+});
+
+/* ===== Helpers ===== */
+function totalTasks() { return PHASES.reduce((a, p) => a + getPhaseTasks(p.id).length, 0); }
+function totalTools() {
+  const set = new Set();
+  PHASES.forEach(p => getPhaseTools(p.id).forEach(t => set.add(t.name)));
+  return set.size;
+}
+function totalWeeks() {
+  const min = PHASES.reduce((a, p) => a + (p.weeks?.[0] ?? 0), 0);
+  const max = PHASES.reduce((a, p) => a + (p.weeks?.[1] ?? 0), 0);
+  return { min, max };
+}
+function isDone(taskId) { return !!state.done[taskId]; }
+function phaseProgress(pid) {
+  const tasks = getPhaseTasks(pid);
+  if (tasks.length === 0) return 0;
+  const done = tasks.filter(t => isDone(t.id)).length;
+  return Math.round((done / tasks.length) * 100);
+}
+function overallProgress() {
+  const total = totalTasks();
+  if (total === 0) return 0;
+  const doneCount = PHASES.reduce((a, p) => a + getPhaseTasks(p.id).filter(t => isDone(t.id)).length, 0);
+  return Math.round((doneCount / total) * 100);
+}
+function doneTasksCount() {
+  return PHASES.reduce((a, p) => a + getPhaseTasks(p.id).filter(t => isDone(t.id)).length, 0);
+}
+
+/* ===== Render: summary ===== */
+function renderSummary() {
+  const w = totalWeeks();
+  const overall = overallProgress();
+  const cards = [
+    { label: "Fases del ciclo", value: PHASES.length, sub: "Pre-proyecto → Cierre", color: "var(--c-f3)" },
+    { label: "Tareas totales", value: totalTasks(), sub: "A lo largo del proyecto", color: "var(--c-f1)" },
+    { label: "Herramientas únicas", value: totalTools(), sub: "Stack del Analista Funcional", color: "var(--c-f4)" },
+    { label: "Duración estimada", value: `${w.min}–${w.max} sem.`, sub: "Proyecto de complejidad media", color: "var(--c-f2)" },
+    { label: "Progreso general", value: `${overall}%`, sub: `${doneTasksCount()} de ${totalTasks()} tareas`, color: "var(--c-f5)" }
+  ];
+  document.getElementById("summary").innerHTML = cards.map(c => `
+    <div class="card" style="--accent:${c.color}">
+      <span class="label">${c.label}</span>
+      <span class="value">${c.value}</span>
+      <span class="sub">${c.sub}</span>
+    </div>
+  `).join("");
+}
+
+/* ===== Render: filters ===== */
+function renderFilters() {
+  const phaseSel = document.getElementById("phaseFilter");
+  phaseSel.innerHTML = `<option value="">Todas las fases</option>` +
+    PHASES.map(p => `<option value="${p.id}">${p.num} · ${p.name}</option>`).join("");
+  phaseSel.value = state.filters.phase;
+
+  const toolsSet = new Set();
+  PHASES.forEach(p => getPhaseTools(p.id).forEach(t => toolsSet.add(t.name)));
+  const tools = [...toolsSet].sort();
+  const toolSel = document.getElementById("toolFilter");
+  toolSel.innerHTML = `<option value="">Todas las herramientas</option>` +
+    tools.map(t => `<option value="${t.replace(/"/g, '&quot;')}">${t}</option>`).join("");
+  toolSel.value = state.filters.tool;
+
+  document.getElementById("searchInput").value = state.filters.q;
+}
+
+function phaseMatchesFilters(p) {
+  const { q, phase, tool } = state.filters;
+  const tasks = getPhaseTasks(p.id);
+  const tools = getPhaseTools(p.id);
+  if (phase !== "" && String(p.id) !== String(phase)) return false;
+  if (tool !== "" && !tools.some(t => t.name === tool)) return false;
+  if (q.trim()) {
+    const needle = q.trim().toLowerCase();
+    const hay = (p.name + " " + p.objective + " " +
+      tasks.map(t => t.text).join(" ") + " " +
+      tools.map(t => t.name + " " + t.purpose).join(" ")).toLowerCase();
+    if (!hay.includes(needle)) return false;
+  }
+  return true;
+}
+
+/* ===== Render: timeline ===== */
+function renderTimeline() {
+  const wrap = document.getElementById("timeline");
+  wrap.innerHTML = PHASES.map(p => {
+    const matches = phaseMatchesFilters(p);
+    const selected = p.id === state.selected;
+    const prog = phaseProgress(p.id);
+    return `
+      <button class="phase-node ${matches ? "" : "dim"}" data-id="${p.id}" role="tab"
+        aria-selected="${selected}" style="--accent:${p.color}">
+        <div class="dot">
+          <span>${p.icon}</span>
+          <div class="progress-ring" style="--p:${prog}"></div>
+        </div>
+        <span class="num">${p.num}</span>
+        <span class="name">${p.name}</span>
+        <span class="dur">${p.duration}</span>
+      </button>
+    `;
+  }).join("");
+  wrap.querySelectorAll(".phase-node").forEach(node => {
+    node.addEventListener("click", () => {
+      const id = parseInt(node.dataset.id, 10);
+      state.selected = id;
+      saveState();
+      renderTimeline();
+      renderDetail();
+      document.getElementById("detail").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+/* ===== Render: detail ===== */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+function renderDetail() {
+  const p = PHASES.find(x => x.id === state.selected);
+  const detail = document.getElementById("detail");
+  if (!p) { detail.innerHTML = `<div class="no-results">Sin resultados</div>`; return; }
+  const tasks = getPhaseTasks(p.id);
+  const tools = getPhaseTools(p.id);
+  const prog = phaseProgress(p.id);
+  const matchesFilters = phaseMatchesFilters(p);
+  const highlightedTool = state.filters.tool;
+
+  detail.style.setProperty("--accent", p.color);
+  detail.innerHTML = `
+    <div class="detail-header">
+      <div class="left">
+        <div class="badge">${p.icon}</div>
+        <div>
+          <div style="font-size:.75rem;color:var(--text-mute);letter-spacing:.12em;font-weight:600;text-transform:uppercase;">${p.num}</div>
+          <h2>${p.name}</h2>
+          <div class="meta">
+            <span class="chip">⏱️ ${p.duration}</span>
+            <span class="chip">📌 ${tasks.length} tareas</span>
+            <span class="chip">🛠️ ${tools.length} herramientas</span>
+            <span class="chip" style="background:color-mix(in srgb, ${p.color} 20%, transparent);color:${p.color};font-weight:600;">${prog}% completado</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-nav">
+        <button data-nav="prev" title="Fase anterior">←</button>
+        <button data-nav="next" title="Fase siguiente">→</button>
+      </div>
+    </div>
+    <div class="detail-body fade-in">
+      <div class="panel">
+        <h3>🎯 Objetivo</h3>
+        <div class="objective">${escapeHtml(p.objective)}</div>
+
+        <h3 style="margin-top:22px;">📌 Tareas a realizar</h3>
+        <ul class="tasks" id="taskList">
+          ${tasks.map(t => {
+            const done = isDone(t.id);
+            const custom = isCustomId(t.id);
+            return `
+              <li class="${done ? "done" : ""}">
+                <input type="checkbox" id="cb-${t.id}" data-tid="${t.id}" ${done ? "checked" : ""} />
+                <label for="cb-${t.id}">${escapeHtml(t.text)}${custom ? `<span class="item-flag">Nueva</span>` : ""}</label>
+                <button class="remove-btn" data-remove-task="${t.id}" title="Eliminar tarea" aria-label="Eliminar tarea">✕</button>
+              </li>`;
+          }).join("")}
+        </ul>
+        <form class="add-form" id="addTaskForm" autocomplete="off">
+          <input type="text" id="newTaskInput" placeholder="Agregar una nueva tarea…" maxlength="240" required />
+          <button type="submit" class="add-btn icon-only" title="Agregar tarea" aria-label="Agregar tarea">+</button>
+        </form>
+
+        <div class="deliverable" style="--accent:${p.color}">
+          <span class="icon">📦</span>
+          <div>
+            <span class="lbl">Entregable</span>
+            <span class="txt">${escapeHtml(p.deliverable)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🛠️ Herramientas recomendadas</h3>
+        <table class="tools-table">
+          <thead>
+            <tr><th>Herramienta</th><th>¿Para qué se usa?</th><th></th></tr>
+          </thead>
+          <tbody>
+            ${tools.length === 0 ? `<tr><td colspan="3" style="color:var(--text-mute);text-align:center;padding:18px;">Sin herramientas. Agregá una abajo.</td></tr>` :
+              tools.map(t => `
+                <tr class="${highlightedTool && t.name === highlightedTool ? "hl" : ""}">
+                  <td class="tool">${escapeHtml(t.name)}${isCustomId(t.id) ? `<span class="item-flag">Nueva</span>` : ""}</td>
+                  <td class="purpose">${escapeHtml(t.purpose)}</td>
+                  <td class="remove-cell">
+                    <button class="remove-btn" data-remove-tool="${t.id}" title="Eliminar herramienta" aria-label="Eliminar herramienta">✕</button>
+                  </td>
+                </tr>
+              `).join("")}
+          </tbody>
+        </table>
+        <form class="add-form" id="addToolForm" autocomplete="off">
+          <input type="text" id="newToolName" placeholder="Nombre de la herramienta" maxlength="80" required />
+          <input type="text" id="newToolPurpose" placeholder="¿Para qué se usa?" maxlength="140" required />
+          <button type="submit" class="add-btn icon-only" title="Agregar herramienta" aria-label="Agregar herramienta">+</button>
+        </form>
+        ${!matchesFilters ? `<div style="margin-top:14px;padding:10px 12px;background:var(--bg-soft);border-radius:8px;font-size:.85rem;color:var(--text-mute);">⚠️ Esta fase no coincide con los filtros activos. Mostrándola igualmente porque la seleccionaste.</div>` : ""}
+      </div>
+    </div>
+  `;
+
+  // Checkbox toggles
+  detail.querySelectorAll("input[type=checkbox][data-tid]").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const tid = cb.dataset.tid;
+      state.done[tid] = cb.checked;
+      saveState();
+      cb.closest("li").classList.toggle("done", cb.checked);
+      renderSummary();
+      const ring = document.querySelector(`.phase-node[data-id="${p.id}"] .progress-ring`);
+      if (ring) ring.style.setProperty("--p", phaseProgress(p.id));
+      const chip = detail.querySelector(".meta .chip:nth-last-child(1)");
+      if (chip) chip.textContent = `${phaseProgress(p.id)}% completado`;
+    });
+  });
+
+  // Remove task
+  detail.querySelectorAll("[data-remove-task]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const tid = btn.dataset.removeTask;
+      if (!confirm("¿Eliminar esta tarea?")) return;
+      removeTaskFrom(p.id, tid);
+      renderDetail(); renderTimeline(); renderSummary();
+    });
+  });
+
+  // Remove tool
+  detail.querySelectorAll("[data-remove-tool]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const tid = btn.dataset.removeTool;
+      if (!confirm("¿Eliminar esta herramienta?")) return;
+      removeToolFrom(p.id, tid);
+      renderDetail(); renderFilters(); renderSummary();
+    });
+  });
+
+  // Add task
+  const addTaskForm = detail.querySelector("#addTaskForm");
+  addTaskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = detail.querySelector("#newTaskInput");
+    const text = input.value.trim();
+    if (!text) return;
+    addTaskTo(p.id, text);
+    renderDetail(); renderTimeline(); renderSummary();
+    requestAnimationFrame(() => {
+      const newInput = document.querySelector("#newTaskInput");
+      if (newInput) newInput.focus();
+    });
+  });
+
+  // Add tool
+  const addToolForm = detail.querySelector("#addToolForm");
+  addToolForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nameEl = detail.querySelector("#newToolName");
+    const purposeEl = detail.querySelector("#newToolPurpose");
+    const name = nameEl.value.trim();
+    const purpose = purposeEl.value.trim();
+    if (!name || !purpose) return;
+    addToolTo(p.id, name, purpose);
+    renderDetail(); renderFilters(); renderSummary();
+    requestAnimationFrame(() => {
+      const newInput = document.querySelector("#newToolName");
+      if (newInput) newInput.focus();
+    });
+  });
+
+  // Nav buttons
+  detail.querySelectorAll(".detail-nav button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const dir = btn.dataset.nav === "next" ? 1 : -1;
+      const next = (state.selected + dir + PHASES.length) % PHASES.length;
+      state.selected = next; saveState();
+      renderTimeline(); renderDetail();
+    });
+  });
+}
+
+/* ===== Render: stack & tips ===== */
+function renderStack() {
+  document.getElementById("stackGrid").innerHTML = STACK.map(s => `
+    <div class="stack-card">
+      <div class="cat">${s.cat}</div>
+      <div class="items">${s.items}</div>
+    </div>
+  `).join("");
+}
+function renderTips() {
+  document.getElementById("tipsGrid").innerHTML = TIPS.map(t => `
+    <div class="tip">
+      <h4>${t.title}</h4>
+      <p>${t.body}</p>
+    </div>
+  `).join("");
+}
+
+/* ===== Filter wiring ===== */
+function wireFilters() {
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    state.filters.q = e.target.value; saveState(); renderTimeline();
+  });
+  document.getElementById("phaseFilter").addEventListener("change", (e) => {
+    state.filters.phase = e.target.value;
+    if (e.target.value !== "") {
+      state.selected = parseInt(e.target.value, 10);
+    }
+    saveState(); renderTimeline(); renderDetail();
+  });
+  document.getElementById("toolFilter").addEventListener("change", (e) => {
+    state.filters.tool = e.target.value; saveState(); renderTimeline(); renderDetail();
+  });
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    state.filters = { q: "", phase: "", tool: "" };
+    document.getElementById("searchInput").value = "";
+    document.getElementById("phaseFilter").value = "";
+    document.getElementById("toolFilter").value = "";
+    saveState(); renderTimeline(); renderDetail();
+  });
+}
+
+/* ===== Init ===== */
+applyTheme();
+renderSummary();
+renderFilters();
+renderTimeline();
+renderDetail();
+renderStack();
+renderTips();
+wireFilters();
+</script>
+</body>
+</html>
