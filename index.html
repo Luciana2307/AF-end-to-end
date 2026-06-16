@@ -284,6 +284,17 @@
     font-size: .72rem;
     color: var(--text-mute);
   }
+  .phase-node .prog-pct {
+    margin-top: 4px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: .02em;
+    transition: background .2s ease, color .2s ease;
+  }
   .phase-node.dim { opacity: .35; }
   .phase-node .progress-ring {
     position: absolute;
@@ -1105,6 +1116,7 @@ function renderTimeline() {
         <span class="num">${p.num}</span>
         <span class="name">${p.name}</span>
         <span class="dur">${p.duration}</span>
+        <span class="prog-pct">${prog}%</span>
       </button>
     `;
   }).join("");
@@ -1227,6 +1239,8 @@ function renderDetail() {
       renderSummary();
       const ring = document.querySelector(`.phase-node[data-id="${p.id}"] .progress-ring`);
       if (ring) ring.style.setProperty("--p", phaseProgress(p.id));
+      const pctBadge = document.querySelector(`.phase-node[data-id="${p.id}"] .prog-pct`);
+      if (pctBadge) pctBadge.textContent = `${phaseProgress(p.id)}%`;
       const chip = detail.querySelector(".meta .chip:nth-last-child(1)");
       if (chip) chip.textContent = `${phaseProgress(p.id)}% completado`;
     });
