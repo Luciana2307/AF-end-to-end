@@ -577,6 +577,80 @@
 
   .tools-table td.remove-cell { width: 36px; text-align: center; padding: 6px 4px; }
 
+  /* ===== Documents list ===== */
+  .docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .docs-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 10px 12px;
+    padding-right: 36px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    transition: background .15s ease;
+    position: relative;
+  }
+  .docs-list li:hover { background: color-mix(in srgb, var(--accent) 10%, var(--bg-soft)); }
+  .docs-list li .doc-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .docs-list li a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: .92rem;
+    flex: 1;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .docs-list li a:hover { color: var(--accent); text-decoration: underline; }
+  .docs-list li .doc-host {
+    font-size: .72rem;
+    color: var(--text-mute);
+    font-weight: 400;
+    flex-shrink: 0;
+  }
+  .docs-list li .remove-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background .15s ease, color .15s ease, opacity .15s ease;
+  }
+  .docs-list li:hover .remove-btn,
+  .docs-list li:focus-within .remove-btn { opacity: 1; }
+  .docs-list li .remove-btn:hover {
+    background: color-mix(in srgb, var(--c-f7) 18%, transparent);
+    color: var(--c-f7);
+  }
+  .docs-empty {
+    padding: 14px;
+    text-align: center;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    font-size: .85rem;
+    color: var(--text-mute);
+    border: 1px dashed var(--border);
+  }
+
   .add-form {
     margin-top: 12px;
     display: flex;
@@ -1004,6 +1078,36 @@ function removeToolFrom(pid, toolId) {
   if (idx >= 0) tools.splice(idx, 1);
   saveState();
 }
+function getPhaseDocs(pid) {
+  if (state.phaseData[pid] && state.phaseData[pid].docs) return state.phaseData[pid].docs;
+  return [];
+}
+function ensurePhaseDocs(pid) {
+  if (!state.phaseData[pid]) state.phaseData[pid] = {};
+  if (!state.phaseData[pid].docs) state.phaseData[pid].docs = [];
+  return state.phaseData[pid].docs;
+}
+function addDocTo(pid, title, url) {
+  const docs = ensurePhaseDocs(pid);
+  docs.push({ id: newId("d"), title, url });
+  saveState();
+}
+function removeDocFrom(pid, docId) {
+  const docs = ensurePhaseDocs(pid);
+  const idx = docs.findIndex(d => d.id === docId);
+  if (idx >= 0) docs.splice(idx, 1);
+  saveState();
+}
+function normalizeUrl(raw) {
+  const v = raw.trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  return "https://" + v;
+}
+function urlHost(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ""); }
+  catch (e) { return ""; }
+}
 
 /* ===== Theme ===== */
 function applyTheme() {
@@ -1143,6 +1247,7 @@ function renderDetail() {
   if (!p) { detail.innerHTML = `<div class="no-results">Sin resultados</div>`; return; }
   const tasks = getPhaseTasks(p.id);
   const tools = getPhaseTools(p.id);
+  const docs = getPhaseDocs(p.id);
   const prog = phaseProgress(p.id);
   const matchesFilters = phaseMatchesFilters(p);
   const highlightedTool = state.filters.tool;
@@ -1159,6 +1264,7 @@ function renderDetail() {
             <span class="chip">⏱️ ${p.duration}</span>
             <span class="chip">📌 ${tasks.length} tareas</span>
             <span class="chip">🛠️ ${tools.length} herramientas</span>
+            <span class="chip">📎 ${docs.length} ${docs.length === 1 ? "documento" : "documentos"}</span>
             <span class="chip" style="background:color-mix(in srgb, ${p.color} 20%, transparent);color:${p.color};font-weight:600;">${prog}% completado</span>
           </div>
         </div>
@@ -1198,6 +1304,30 @@ function renderDetail() {
             <span class="txt">${escapeHtml(p.deliverable)}</span>
           </div>
         </div>
+
+        <h3 style="margin-top:22px;">📎 Documentos adjuntos</h3>
+        ${docs.length === 0
+          ? `<div class="docs-empty">Sin documentos. Agregá un link abajo (Drive, Confluence, SharePoint, etc.)</div>`
+          : `<ul class="docs-list" id="docList">
+              ${docs.map(d => {
+                const host = urlHost(d.url);
+                return `
+                  <li>
+                    <span class="doc-icon">📄</span>
+                    <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(d.url)}">
+                      <span>${escapeHtml(d.title)}</span>
+                      ${host ? `<span class="doc-host">· ${escapeHtml(host)} ↗</span>` : `<span class="doc-host">↗</span>`}
+                    </a>
+                    <button class="remove-btn" data-remove-doc="${d.id}" title="Eliminar documento" aria-label="Eliminar documento">✕</button>
+                  </li>`;
+              }).join("")}
+            </ul>`
+        }
+        <form class="add-form" id="addDocForm" autocomplete="off">
+          <input type="text" id="newDocTitle" placeholder="Nombre del documento" maxlength="80" required />
+          <input type="url" id="newDocUrl" placeholder="URL (https://…)" maxlength="500" required />
+          <button type="submit" class="add-btn icon-only" title="Agregar documento" aria-label="Agregar documento">+</button>
+        </form>
       </div>
 
       <div class="panel">
@@ -1279,6 +1409,38 @@ function renderDetail() {
     renderDetail(); renderTimeline(); renderSummary();
     requestAnimationFrame(() => {
       const newInput = document.querySelector("#newTaskInput");
+      if (newInput) newInput.focus();
+    });
+  });
+
+  // Remove doc
+  detail.querySelectorAll("[data-remove-doc]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const did = btn.dataset.removeDoc;
+      if (!confirm("¿Eliminar este documento?")) return;
+      removeDocFrom(p.id, did);
+      renderDetail();
+    });
+  });
+
+  // Add doc
+  const addDocForm = detail.querySelector("#addDocForm");
+  addDocForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const titleEl = detail.querySelector("#newDocTitle");
+    const urlEl = detail.querySelector("#newDocUrl");
+    const title = titleEl.value.trim();
+    const url = normalizeUrl(urlEl.value);
+    if (!title || !url) return;
+    try { new URL(url); } catch (err) {
+      alert("La URL no es válida. Verificá que empiece con http:// o https://");
+      return;
+    }
+    addDocTo(p.id, title, url);
+    renderDetail();
+    requestAnimationFrame(() => {
+      const newInput = document.querySelector("#newDocTitle");
       if (newInput) newInput.focus();
     });
   });
