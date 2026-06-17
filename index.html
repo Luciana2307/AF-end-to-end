@@ -766,7 +766,8 @@
     letter-spacing: .08em;
     font-weight: 600;
   }
-  .modal-body textarea {
+  .modal-body textarea,
+  .modal-body input[type="text"] {
     background: var(--bg-soft);
     border: 1px solid var(--border);
     color: var(--text);
@@ -775,14 +776,15 @@
     font-size: .92rem;
     font-family: inherit;
     outline: none;
-    resize: vertical;
-    min-height: 88px;
     transition: border-color .15s ease, box-shadow .15s ease;
   }
-  .modal-body textarea:focus {
+  .modal-body textarea { resize: vertical; min-height: 88px; }
+  .modal-body textarea:focus,
+  .modal-body input[type="text"]:focus {
     border-color: var(--accent, var(--c-f3));
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--c-f3)) 25%, transparent);
   }
+  .modal-field { display: flex; flex-direction: column; gap: 4px; }
   .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -951,6 +953,29 @@
       <textarea id="modalTaskInput" placeholder="Describí la tarea…" maxlength="240" required></textarea>
       <div class="modal-footer">
         <button type="button" class="btn-secondary" id="taskModalCancel">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="toolModal" hidden>
+  <div class="modal" role="dialog" aria-labelledby="toolModalTitle" aria-modal="true">
+    <div class="modal-header">
+      <h3 id="toolModalTitle">Agregar nueva herramienta</h3>
+      <button class="modal-close" id="toolModalClose" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="toolModalForm" class="modal-body" autocomplete="off">
+      <div class="modal-field">
+        <label for="modalToolName" class="modal-label">Nombre de la herramienta</label>
+        <input type="text" id="modalToolName" placeholder="Ej: Confluence, Jira, Figma…" maxlength="80" required />
+      </div>
+      <div class="modal-field">
+        <label for="modalToolPurpose" class="modal-label">¿Para qué se usa?</label>
+        <input type="text" id="modalToolPurpose" placeholder="Ej: Documentación funcional" maxlength="140" required />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="toolModalCancel">Cancelar</button>
         <button type="submit" class="btn-primary">Guardar</button>
       </div>
     </form>
@@ -1499,11 +1524,7 @@ function renderDetail() {
               `).join("")}
           </tbody>
         </table>
-        <form class="add-form" id="addToolForm" autocomplete="off">
-          <input type="text" id="newToolName" placeholder="Nombre de la herramienta" maxlength="80" required />
-          <input type="text" id="newToolPurpose" placeholder="¿Para qué se usa?" maxlength="140" required />
-          <button type="submit" class="add-btn icon-only" title="Agregar herramienta" aria-label="Agregar herramienta">+</button>
-        </form>
+        <button type="button" class="add-task-btn" id="openToolModalBtn">+ Agregar herramienta</button>
 
         <div class="docs-section">
           <h3>📎 Documentos adjuntos</h3>
@@ -1613,22 +1634,11 @@ function renderDetail() {
     });
   });
 
-  // Add tool
-  const addToolForm = detail.querySelector("#addToolForm");
-  addToolForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const nameEl = detail.querySelector("#newToolName");
-    const purposeEl = detail.querySelector("#newToolPurpose");
-    const name = nameEl.value.trim();
-    const purpose = purposeEl.value.trim();
-    if (!name || !purpose) return;
-    addToolTo(p.id, name, purpose);
-    renderDetail(); renderFilters(); renderSummary();
-    requestAnimationFrame(() => {
-      const newInput = document.querySelector("#newToolName");
-      if (newInput) newInput.focus();
-    });
-  });
+  // Add tool (open modal)
+  const openToolBtn = detail.querySelector("#openToolModalBtn");
+  if (openToolBtn) {
+    openToolBtn.addEventListener("click", () => openToolModal(p.id));
+  }
 
   // Nav buttons
   detail.querySelectorAll(".detail-nav button").forEach(btn => {
@@ -1724,6 +1734,49 @@ function wireTaskModal() {
   });
 }
 
+/* ===== Tool modal ===== */
+let toolModalCurrentPhase = null;
+function openToolModal(pid) {
+  toolModalCurrentPhase = pid;
+  const phase = PHASES.find(p => p.id === pid);
+  const modalEl = document.querySelector("#toolModal .modal");
+  if (phase) modalEl.style.setProperty("--accent", phase.color);
+  document.getElementById("toolModalTitle").textContent =
+    phase ? `Agregar herramienta · ${phase.name}` : "Agregar nueva herramienta";
+  document.getElementById("modalToolName").value = "";
+  document.getElementById("modalToolPurpose").value = "";
+  document.getElementById("toolModal").hidden = false;
+  setTimeout(() => document.getElementById("modalToolName").focus(), 30);
+}
+function closeToolModal() {
+  document.getElementById("toolModal").hidden = true;
+  document.getElementById("modalToolName").value = "";
+  document.getElementById("modalToolPurpose").value = "";
+  toolModalCurrentPhase = null;
+}
+function wireToolModal() {
+  document.getElementById("toolModalClose").addEventListener("click", closeToolModal);
+  document.getElementById("toolModalCancel").addEventListener("click", closeToolModal);
+  document.getElementById("toolModal").addEventListener("click", (e) => {
+    if (e.target.id === "toolModal") closeToolModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !document.getElementById("toolModal").hidden) closeToolModal();
+  });
+  document.getElementById("toolModalForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("modalToolName").value.trim();
+    const purpose = document.getElementById("modalToolPurpose").value.trim();
+    if (!name || !purpose || toolModalCurrentPhase === null) return;
+    const pid = toolModalCurrentPhase;
+    addToolTo(pid, name, purpose);
+    closeToolModal();
+    renderDetail();
+    renderFilters();
+    renderSummary();
+  });
+}
+
 /* ===== Init ===== */
 applyTheme();
 renderSummary();
@@ -1734,6 +1787,7 @@ renderStack();
 renderTips();
 wireFilters();
 wireTaskModal();
+wireToolModal();
 </script>
 </body>
 </html>
