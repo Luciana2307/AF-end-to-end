@@ -920,12 +920,6 @@
     <div class="stack-grid" id="stackGrid"></div>
   </section>
 
-  <section class="section">
-    <h2>💡 Consejos prácticos que valen más que la teoría</h2>
-    <p class="sub">Lecciones que la experiencia demuestra como críticas para el éxito del proyecto.</p>
-    <div class="tips-grid" id="tipsGrid"></div>
-  </section>
-
   <footer>Cronograma integral del Analista Funcional · Dashboard interactivo</footer>
 </div>
 
@@ -1191,14 +1185,6 @@ const STACK = [
   { cat: "🤝 Workshops virtuales", items: "Miro, Mural, FigJam" },
   { cat: "🧪 Testing", items: "Zephyr, Xray, TestRail, Postman" },
   { cat: "📈 Cronograma macro", items: "MS Project, Smartsheet, GanttPRO" }
-];
-
-const TIPS = [
-  { title: "📝 Documentá todo, pero priorizá lo accionable", body: "Un documento de 100 páginas que nadie lee es peor que una página de Confluence con los acuerdos clave. La utilidad de la documentación se mide por cuánto se usa, no por cuánto pesa." },
-  { title: "✅ Validá temprano y seguido", body: "Es mucho más barato corregir un wireframe que un desarrollo terminado. Cuanto antes detectes un malentendido con el cliente, menos costará corregirlo." },
-  { title: "📋 Las minutas son tu seguro de vida", body: "Después de cada reunión: qué se habló, qué se decidió, quién hace qué y para cuándo. Sin minuta, todo decisión es 'recuerdo' y los recuerdos cambian con el tiempo." },
-  { title: "🌉 El AF es puente, no obstáculo", body: "Tu rol es destrabar al equipo técnico y al cliente, no convertirte en un cuello de botella entre ambos. Facilitá la comunicación, no la centralices." },
-  { title: "⚠️ Gestioná los cambios formalmente", body: "Sin control de cambios, el alcance se infla solo (scope creep). Todo cambio debe analizarse en impacto (tiempo, costo, calidad) y aprobarse formalmente antes de ejecutarse." }
 ];
 
 /* ===== State ===== */
@@ -1651,15 +1637,6 @@ function renderStack() {
     </div>
   `).join("");
 }
-function renderTips() {
-  document.getElementById("tipsGrid").innerHTML = TIPS.map(t => `
-    <div class="tip">
-      <h4>${t.title}</h4>
-      <p>${t.body}</p>
-    </div>
-  `).join("");
-}
-
 /* ===== Filter wiring ===== */
 function wireFilters() {
   document.getElementById("searchInput").addEventListener("input", (e) => {
@@ -1820,7 +1797,6 @@ renderFilters();
 renderTimeline();
 renderDetail();
 renderStack();
-renderTips();
 wireFilters();
 wireTaskModal();
 wireToolModal();
