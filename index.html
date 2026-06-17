@@ -577,32 +577,39 @@
 
   .tools-table td.remove-cell { width: 36px; text-align: center; padding: 6px 4px; }
 
-  /* ===== Documents list ===== */
+  /* ===== Documents list (compact, right panel) ===== */
+  .docs-section {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border);
+  }
+  .docs-section h3 { margin: 0 0 10px; }
   .docs-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 8px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
   }
   .docs-list li {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px 10px 12px;
-    padding-right: 36px;
+    gap: 8px;
+    padding: 6px 10px 6px 10px;
+    padding-right: 30px;
     background: var(--bg-soft);
-    border-radius: var(--radius-sm);
+    border-radius: 8px;
     transition: background .15s ease;
     position: relative;
+    font-size: .82rem;
   }
   .docs-list li:hover { background: color-mix(in srgb, var(--accent) 10%, var(--bg-soft)); }
-  .docs-list li .doc-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .docs-list li .doc-icon { font-size: .95rem; flex-shrink: 0; }
   .docs-list li a {
     color: var(--text);
     text-decoration: none;
-    font-size: .92rem;
+    font-size: .85rem;
     flex: 1;
     font-weight: 500;
     overflow: hidden;
@@ -610,18 +617,24 @@
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    min-width: 0;
+  }
+  .docs-list li a > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .docs-list li a:hover { color: var(--accent); text-decoration: underline; }
   .docs-list li .doc-host {
-    font-size: .72rem;
+    font-size: .68rem;
     color: var(--text-mute);
     font-weight: 400;
     flex-shrink: 0;
   }
   .docs-list li .remove-btn {
     position: absolute;
-    right: 6px;
+    right: 4px;
     top: 50%;
     transform: translateY(-50%);
     opacity: 0;
@@ -629,9 +642,9 @@
     border: none;
     color: var(--text-mute);
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: .95rem;
     line-height: 1;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 6px;
     transition: background .15s ease, color .15s ease, opacity .15s ease;
   }
@@ -642,14 +655,23 @@
     color: var(--c-f7);
   }
   .docs-empty {
-    padding: 14px;
+    padding: 10px 12px;
     text-align: center;
     background: var(--bg-soft);
-    border-radius: var(--radius-sm);
-    font-size: .85rem;
+    border-radius: 8px;
+    font-size: .78rem;
     color: var(--text-mute);
     border: 1px dashed var(--border);
+    margin-bottom: 8px;
   }
+  .add-form.add-form-compact { margin-top: 8px; gap: 6px; }
+  .add-form.add-form-compact input {
+    padding: 7px 10px;
+    font-size: .82rem;
+    min-width: 100px;
+  }
+  .add-form.add-form-compact .add-btn { padding: 7px 12px; }
+  .add-form.add-form-compact .add-btn.icon-only { width: 32px; height: 32px; font-size: 1.1rem; }
 
   .add-form {
     margin-top: 12px;
@@ -1304,30 +1326,6 @@ function renderDetail() {
             <span class="txt">${escapeHtml(p.deliverable)}</span>
           </div>
         </div>
-
-        <h3 style="margin-top:22px;">📎 Documentos adjuntos</h3>
-        ${docs.length === 0
-          ? `<div class="docs-empty">Sin documentos. Agregá un link abajo (Drive, Confluence, SharePoint, etc.)</div>`
-          : `<ul class="docs-list" id="docList">
-              ${docs.map(d => {
-                const host = urlHost(d.url);
-                return `
-                  <li>
-                    <span class="doc-icon">📄</span>
-                    <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(d.url)}">
-                      <span>${escapeHtml(d.title)}</span>
-                      ${host ? `<span class="doc-host">· ${escapeHtml(host)} ↗</span>` : `<span class="doc-host">↗</span>`}
-                    </a>
-                    <button class="remove-btn" data-remove-doc="${d.id}" title="Eliminar documento" aria-label="Eliminar documento">✕</button>
-                  </li>`;
-              }).join("")}
-            </ul>`
-        }
-        <form class="add-form" id="addDocForm" autocomplete="off">
-          <input type="text" id="newDocTitle" placeholder="Nombre del documento" maxlength="80" required />
-          <input type="url" id="newDocUrl" placeholder="URL (https://…)" maxlength="500" required />
-          <button type="submit" class="add-btn icon-only" title="Agregar documento" aria-label="Agregar documento">+</button>
-        </form>
       </div>
 
       <div class="panel">
@@ -1354,6 +1352,33 @@ function renderDetail() {
           <input type="text" id="newToolPurpose" placeholder="¿Para qué se usa?" maxlength="140" required />
           <button type="submit" class="add-btn icon-only" title="Agregar herramienta" aria-label="Agregar herramienta">+</button>
         </form>
+
+        <div class="docs-section">
+          <h3>📎 Documentos adjuntos</h3>
+          ${docs.length === 0
+            ? `<div class="docs-empty">Sin documentos. Agregá un link (Drive, Confluence, SharePoint…)</div>`
+            : `<ul class="docs-list" id="docList">
+                ${docs.map(d => {
+                  const host = urlHost(d.url);
+                  return `
+                    <li>
+                      <span class="doc-icon">📄</span>
+                      <a href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(d.url)}">
+                        <span>${escapeHtml(d.title)}</span>
+                        ${host ? `<span class="doc-host">· ${escapeHtml(host)} ↗</span>` : `<span class="doc-host">↗</span>`}
+                      </a>
+                      <button class="remove-btn" data-remove-doc="${d.id}" title="Eliminar documento" aria-label="Eliminar documento">✕</button>
+                    </li>`;
+                }).join("")}
+              </ul>`
+          }
+          <form class="add-form add-form-compact" id="addDocForm" autocomplete="off">
+            <input type="text" id="newDocTitle" placeholder="Nombre" maxlength="80" required />
+            <input type="url" id="newDocUrl" placeholder="URL" maxlength="500" required />
+            <button type="submit" class="add-btn icon-only" title="Agregar documento" aria-label="Agregar documento">+</button>
+          </form>
+        </div>
+
         ${!matchesFilters ? `<div style="margin-top:14px;padding:10px 12px;background:var(--bg-soft);border-radius:8px;font-size:.85rem;color:var(--text-mute);">⚠️ Esta fase no coincide con los filtros activos. Mostrándola igualmente porque la seleccionaste.</div>` : ""}
       </div>
     </div>
