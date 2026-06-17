@@ -959,6 +959,29 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="docModal" hidden>
+  <div class="modal" role="dialog" aria-labelledby="docModalTitle" aria-modal="true">
+    <div class="modal-header">
+      <h3 id="docModalTitle">Agregar nuevo archivo</h3>
+      <button class="modal-close" id="docModalClose" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="docModalForm" class="modal-body" autocomplete="off">
+      <div class="modal-field">
+        <label for="modalDocTitle" class="modal-label">Nombre del archivo</label>
+        <input type="text" id="modalDocTitle" placeholder="Ej: Minuta kick-off cliente" maxlength="80" required />
+      </div>
+      <div class="modal-field">
+        <label for="modalDocUrl" class="modal-label">URL del archivo</label>
+        <input type="text" id="modalDocUrl" placeholder="https://drive.google.com/…" maxlength="500" required />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="docModalCancel">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="toolModal" hidden>
   <div class="modal" role="dialog" aria-labelledby="toolModalTitle" aria-modal="true">
     <div class="modal-header">
@@ -1545,11 +1568,7 @@ function renderDetail() {
                 }).join("")}
               </ul>`
           }
-          <form class="add-form add-form-compact" id="addDocForm" autocomplete="off">
-            <input type="text" id="newDocTitle" placeholder="Nombre" maxlength="80" required />
-            <input type="url" id="newDocUrl" placeholder="URL" maxlength="500" required />
-            <button type="submit" class="add-btn icon-only" title="Agregar documento" aria-label="Agregar documento">+</button>
-          </form>
+          <button type="button" class="add-task-btn" id="openDocModalBtn">+ Agregar archivo</button>
         </div>
 
         ${!matchesFilters ? `<div style="margin-top:14px;padding:10px 12px;background:var(--bg-soft);border-radius:8px;font-size:.85rem;color:var(--text-mute);">⚠️ Esta fase no coincide con los filtros activos. Mostrándola igualmente porque la seleccionaste.</div>` : ""}
@@ -1613,26 +1632,11 @@ function renderDetail() {
     });
   });
 
-  // Add doc
-  const addDocForm = detail.querySelector("#addDocForm");
-  addDocForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const titleEl = detail.querySelector("#newDocTitle");
-    const urlEl = detail.querySelector("#newDocUrl");
-    const title = titleEl.value.trim();
-    const url = normalizeUrl(urlEl.value);
-    if (!title || !url) return;
-    try { new URL(url); } catch (err) {
-      alert("La URL no es válida. Verificá que empiece con http:// o https://");
-      return;
-    }
-    addDocTo(p.id, title, url);
-    renderDetail();
-    requestAnimationFrame(() => {
-      const newInput = document.querySelector("#newDocTitle");
-      if (newInput) newInput.focus();
-    });
-  });
+  // Add doc (open modal)
+  const openDocBtn = detail.querySelector("#openDocModalBtn");
+  if (openDocBtn) {
+    openDocBtn.addEventListener("click", () => openDocModal(p.id));
+  }
 
   // Add tool (open modal)
   const openToolBtn = detail.querySelector("#openToolModalBtn");
@@ -1777,6 +1781,51 @@ function wireToolModal() {
   });
 }
 
+/* ===== Doc modal ===== */
+let docModalCurrentPhase = null;
+function openDocModal(pid) {
+  docModalCurrentPhase = pid;
+  const phase = PHASES.find(p => p.id === pid);
+  const modalEl = document.querySelector("#docModal .modal");
+  if (phase) modalEl.style.setProperty("--accent", phase.color);
+  document.getElementById("docModalTitle").textContent =
+    phase ? `Agregar archivo · ${phase.name}` : "Agregar nuevo archivo";
+  document.getElementById("modalDocTitle").value = "";
+  document.getElementById("modalDocUrl").value = "";
+  document.getElementById("docModal").hidden = false;
+  setTimeout(() => document.getElementById("modalDocTitle").focus(), 30);
+}
+function closeDocModal() {
+  document.getElementById("docModal").hidden = true;
+  document.getElementById("modalDocTitle").value = "";
+  document.getElementById("modalDocUrl").value = "";
+  docModalCurrentPhase = null;
+}
+function wireDocModal() {
+  document.getElementById("docModalClose").addEventListener("click", closeDocModal);
+  document.getElementById("docModalCancel").addEventListener("click", closeDocModal);
+  document.getElementById("docModal").addEventListener("click", (e) => {
+    if (e.target.id === "docModal") closeDocModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !document.getElementById("docModal").hidden) closeDocModal();
+  });
+  document.getElementById("docModalForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("modalDocTitle").value.trim();
+    const url = normalizeUrl(document.getElementById("modalDocUrl").value);
+    if (!title || !url || docModalCurrentPhase === null) return;
+    try { new URL(url); } catch (err) {
+      alert("La URL no es válida. Verificá que empiece con http:// o https://");
+      return;
+    }
+    const pid = docModalCurrentPhase;
+    addDocTo(pid, title, url);
+    closeDocModal();
+    renderDetail();
+  });
+}
+
 /* ===== Init ===== */
 applyTheme();
 renderSummary();
@@ -1788,6 +1837,7 @@ renderTips();
 wireFilters();
 wireTaskModal();
 wireToolModal();
+wireDocModal();
 </script>
 </body>
 </html>
