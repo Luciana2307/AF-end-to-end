@@ -385,7 +385,7 @@
   .detail-body {
     padding: 24px 28px 28px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.6fr 1fr;
     gap: 28px;
   }
   @media (max-width: 880px) {
@@ -441,23 +441,23 @@
   }
   .tasks li.done label { text-decoration: line-through; color: var(--text-mute); }
 
-  .tools-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .tools-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
   .tools-table th, .tools-table td {
     text-align: left;
-    padding: 10px 12px;
+    padding: 7px 9px;
     border-bottom: 1px solid var(--border);
+    line-height: 1.35;
   }
   .tools-table th {
-    font-size: .72rem;
+    font-size: .66rem;
     text-transform: uppercase;
     letter-spacing: .08em;
     color: var(--text-mute);
     font-weight: 600;
   }
   .tools-table tr:last-child td { border-bottom: none; }
-  .tools-table td.tool { font-weight: 600; color: var(--text); white-space: nowrap; }
-  .tools-table td.purpose { color: var(--text-soft); }
-  .tools-table tr.hl { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .tools-table td.tool { font-weight: 600; color: var(--text); }
+  .tools-table td.purpose { color: var(--text-soft); font-size: .78rem; }
 
   .deliverable {
     margin-top: 18px;
