@@ -903,9 +903,6 @@
     <select id="phaseFilter">
       <option value="">Todas las fases</option>
     </select>
-    <select id="toolFilter">
-      <option value="">Todas las herramientas</option>
-    </select>
     <button class="reset-btn" id="resetBtn">Limpiar filtros</button>
   </section>
 
@@ -1375,23 +1372,14 @@ function renderFilters() {
     PHASES.map(p => `<option value="${p.id}">${p.num} · ${p.name}</option>`).join("");
   phaseSel.value = state.filters.phase;
 
-  const toolsSet = new Set();
-  PHASES.forEach(p => getPhaseTools(p.id).forEach(t => toolsSet.add(t.name)));
-  const tools = [...toolsSet].sort();
-  const toolSel = document.getElementById("toolFilter");
-  toolSel.innerHTML = `<option value="">Todas las herramientas</option>` +
-    tools.map(t => `<option value="${t.replace(/"/g, '&quot;')}">${t}</option>`).join("");
-  toolSel.value = state.filters.tool;
-
   document.getElementById("searchInput").value = state.filters.q;
 }
 
 function phaseMatchesFilters(p) {
-  const { q, phase, tool } = state.filters;
+  const { q, phase } = state.filters;
   const tasks = getPhaseTasks(p.id);
   const tools = getPhaseTools(p.id);
   if (phase !== "" && String(p.id) !== String(phase)) return false;
-  if (tool !== "" && !tools.some(t => t.name === tool)) return false;
   if (q.trim()) {
     const needle = q.trim().toLowerCase();
     const hay = (p.name + " " + p.objective + " " +
@@ -1449,7 +1437,6 @@ function renderDetail() {
   const docs = getPhaseDocs(p.id);
   const prog = phaseProgress(p.id);
   const matchesFilters = phaseMatchesFilters(p);
-  const highlightedTool = state.filters.tool;
 
   detail.style.setProperty("--accent", p.color);
   detail.innerHTML = `
@@ -1511,7 +1498,7 @@ function renderDetail() {
           <tbody>
             ${tools.length === 0 ? `<tr><td colspan="3" style="color:var(--text-mute);text-align:center;padding:18px;">Sin herramientas. Agregá una abajo.</td></tr>` :
               tools.map(t => `
-                <tr class="${highlightedTool && t.name === highlightedTool ? "hl" : ""}">
+                <tr>
                   <td class="tool">${escapeHtml(t.name)}${isCustomId(t.id) ? `<span class="item-flag">Nueva</span>` : ""}</td>
                   <td class="purpose">${escapeHtml(t.purpose)}</td>
                   <td class="remove-cell">
@@ -1650,14 +1637,10 @@ function wireFilters() {
     }
     saveState(); renderTimeline(); renderDetail();
   });
-  document.getElementById("toolFilter").addEventListener("change", (e) => {
-    state.filters.tool = e.target.value; saveState(); renderTimeline(); renderDetail();
-  });
   document.getElementById("resetBtn").addEventListener("click", () => {
-    state.filters = { q: "", phase: "", tool: "" };
+    state.filters = { q: "", phase: "" };
     document.getElementById("searchInput").value = "";
     document.getElementById("phaseFilter").value = "";
-    document.getElementById("toolFilter").value = "";
     saveState(); renderTimeline(); renderDetail();
   });
 }
