@@ -667,25 +667,7 @@
   .add-form.add-form-compact .add-btn { padding: 7px 12px; }
   .add-form.add-form-compact .add-btn.icon-only { width: 32px; height: 32px; font-size: 1.1rem; }
 
-  /* ===== Risks section (compact chips) ===== */
-  .risks-section {
-    margin: 0 28px 22px;
-    padding: 12px 16px 14px;
-    background: var(--bg-soft);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-  }
-  .risks-section h3 {
-    font-size: .72rem;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: var(--text-mute);
-    margin: 0 0 8px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  /* ===== Risks (compact chips, integrated in right panel) ===== */
   .risks-chips {
     list-style: none;
     padding: 0;
@@ -1707,6 +1689,33 @@ function renderDetail() {
         </table>
         <button type="button" class="add-task-btn" id="openToolModalBtn">+ Agregar herramienta</button>
 
+        <h3 style="margin-top:22px;">⚠️ Riesgos identificados</h3>
+        ${risks.length === 0
+          ? `<div class="risks-empty">Sin riesgos cargados.</div>`
+          : `<ul class="risks-chips">
+              ${risks.map(r => {
+                const sev = SEVERITY_META[r.severity] || SEVERITY_META.media;
+                const st  = STATUS_META[r.status] || STATUS_META.abierto;
+                const tipLines = [
+                  `${r.title}`,
+                  `Severidad: ${sev.label}` + (r.owner ? ` · Responsable: ${r.owner}` : "") + ` · Estado: ${st.label}`,
+                  r.mitigation ? `Mitigación: ${r.mitigation}` : ""
+                ].filter(Boolean);
+                const tip = tipLines.join("\n");
+                return `
+                  <li class="risk-chip" style="--risk-color:${sev.color};--status-color:${st.color}">
+                    <span class="chip-inner" title="${escapeHtml(tip)}">
+                      <span class="risk-sev-dot"></span>
+                      <span class="chip-name">${escapeHtml(r.title)}</span>
+                      <span class="chip-status">${st.label}</span>
+                    </span>
+                    <button class="chip-remove" data-remove-risk="${r.id}" title="Eliminar riesgo" aria-label="Eliminar riesgo">✕</button>
+                  </li>`;
+              }).join("")}
+            </ul>`
+        }
+        <button type="button" class="add-task-btn add-task-btn-sm" id="openRiskModalBtn">+ Agregar riesgo</button>
+
         <div class="docs-section">
           <h3>📎 Documentos adjuntos</h3>
           ${docs.length === 0
@@ -1733,34 +1742,6 @@ function renderDetail() {
       </div>
     </div>
 
-    <div class="risks-section">
-      <h3>⚠️ Riesgos identificados</h3>
-      ${risks.length === 0
-        ? `<div class="risks-empty">Sin riesgos cargados.</div>`
-        : `<ul class="risks-chips">
-            ${risks.map(r => {
-              const sev = SEVERITY_META[r.severity] || SEVERITY_META.media;
-              const st  = STATUS_META[r.status] || STATUS_META.abierto;
-              const tipLines = [
-                `${r.title}`,
-                `Severidad: ${sev.label}` + (r.owner ? ` · Responsable: ${r.owner}` : "") + ` · Estado: ${st.label}`,
-                r.mitigation ? `Mitigación: ${r.mitigation}` : ""
-              ].filter(Boolean);
-              const tip = tipLines.join("\n");
-              return `
-                <li class="risk-chip" style="--risk-color:${sev.color};--status-color:${st.color}">
-                  <span class="chip-inner" title="${escapeHtml(tip)}">
-                    <span class="risk-sev-dot"></span>
-                    <span class="chip-name">${escapeHtml(r.title)}</span>
-                    <span class="chip-status">${st.label}</span>
-                  </span>
-                  <button class="chip-remove" data-remove-risk="${r.id}" title="Eliminar riesgo" aria-label="Eliminar riesgo">✕</button>
-                </li>`;
-            }).join("")}
-          </ul>`
-      }
-      <button type="button" class="add-task-btn add-task-btn-sm" id="openRiskModalBtn">+ Agregar riesgo</button>
-    </div>
   `;
 
   // Checkbox toggles
