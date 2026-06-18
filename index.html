@@ -715,13 +715,13 @@
     white-space: nowrap;
     max-width: 200px;
   }
-  .risk-chip .chip-status {
+  .risk-chip .chip-sev-label {
     font-size: .62rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: var(--status-color, var(--c-f3));
-    background: color-mix(in srgb, var(--status-color, var(--c-f3)) 14%, transparent);
+    color: var(--risk-color, var(--c-f3));
+    background: color-mix(in srgb, var(--risk-color, var(--c-f3)) 14%, transparent);
     padding: 1px 7px;
     border-radius: 999px;
     flex-shrink: 0;
@@ -1064,18 +1064,6 @@
       <div class="modal-field">
         <label for="modalRiskMitigation" class="modal-label">Plan de mitigación</label>
         <textarea id="modalRiskMitigation" placeholder="Cómo vamos a prevenirlo o atacarlo si ocurre…" maxlength="400"></textarea>
-      </div>
-      <div class="modal-field">
-        <label for="modalRiskOwner" class="modal-label">Responsable</label>
-        <input type="text" id="modalRiskOwner" placeholder="Ej: Sponsor / PM / María González" maxlength="80" />
-      </div>
-      <div class="modal-field">
-        <label for="modalRiskStatus" class="modal-label">Estado</label>
-        <select id="modalRiskStatus" required>
-          <option value="abierto" selected>Abierto</option>
-          <option value="mitigado">Mitigado</option>
-          <option value="cerrado">Cerrado</option>
-        </select>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-secondary" id="riskModalCancel">Cancelar</button>
@@ -1465,11 +1453,6 @@ const SEVERITY_META = {
   media: { label: "Media", color: "var(--c-f8)" },
   alta:  { label: "Alta",  color: "var(--c-f7)" }
 };
-const STATUS_META = {
-  abierto:  { label: "Abierto",  color: "var(--c-f7)" },
-  mitigado: { label: "Mitigado", color: "var(--c-f3)" },
-  cerrado:  { label: "Cerrado",  color: "var(--c-f4)" }
-};
 
 function normalizeUrl(raw) {
   const v = raw.trim();
@@ -1695,19 +1678,18 @@ function renderDetail() {
           : `<ul class="risks-chips">
               ${risks.map(r => {
                 const sev = SEVERITY_META[r.severity] || SEVERITY_META.media;
-                const st  = STATUS_META[r.status] || STATUS_META.abierto;
                 const tipLines = [
                   `${r.title}`,
-                  `Severidad: ${sev.label}` + (r.owner ? ` · Responsable: ${r.owner}` : "") + ` · Estado: ${st.label}`,
+                  `Severidad: ${sev.label}`,
                   r.mitigation ? `Mitigación: ${r.mitigation}` : ""
                 ].filter(Boolean);
                 const tip = tipLines.join("\n");
                 return `
-                  <li class="risk-chip" style="--risk-color:${sev.color};--status-color:${st.color}">
+                  <li class="risk-chip" style="--risk-color:${sev.color}">
                     <span class="chip-inner" title="${escapeHtml(tip)}">
                       <span class="risk-sev-dot"></span>
                       <span class="chip-name">${escapeHtml(r.title)}</span>
-                      <span class="chip-status">${st.label}</span>
+                      <span class="chip-sev-label">${sev.label}</span>
                     </span>
                     <button class="chip-remove" data-remove-risk="${r.id}" title="Eliminar riesgo" aria-label="Eliminar riesgo">✕</button>
                   </li>`;
@@ -2010,8 +1992,6 @@ function openRiskModal(pid) {
   document.getElementById("modalRiskTitle").value = "";
   document.getElementById("modalRiskSeverity").value = "media";
   document.getElementById("modalRiskMitigation").value = "";
-  document.getElementById("modalRiskOwner").value = "";
-  document.getElementById("modalRiskStatus").value = "abierto";
   document.getElementById("riskModal").hidden = false;
   setTimeout(() => document.getElementById("modalRiskTitle").focus(), 30);
 }
@@ -2035,9 +2015,7 @@ function wireRiskModal() {
     const risk = {
       title,
       severity: document.getElementById("modalRiskSeverity").value,
-      mitigation: document.getElementById("modalRiskMitigation").value.trim(),
-      owner: document.getElementById("modalRiskOwner").value.trim(),
-      status: document.getElementById("modalRiskStatus").value
+      mitigation: document.getElementById("modalRiskMitigation").value.trim()
     };
     const pid = riskModalCurrentPhase;
     addRiskTo(pid, risk);
