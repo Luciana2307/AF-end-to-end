@@ -667,6 +667,157 @@
   .add-form.add-form-compact .add-btn { padding: 7px 12px; }
   .add-form.add-form-compact .add-btn.icon-only { width: 32px; height: 32px; font-size: 1.1rem; }
 
+  /* ===== Risks section ===== */
+  .risks-section {
+    margin: 0 28px 28px;
+    padding: 22px 24px 24px;
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .risks-section h3 {
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-mute);
+    margin: 0 0 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .risks-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .risk-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--risk-color, var(--c-f3));
+    border-radius: var(--radius-sm);
+    padding: 12px 14px 12px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    position: relative;
+    transition: box-shadow .15s ease, transform .12s ease;
+  }
+  .risk-card:hover {
+    box-shadow: 0 4px 14px rgba(15,23,42,.06);
+    transform: translateY(-1px);
+  }
+  .risk-card .risk-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .risk-card .risk-title {
+    font-weight: 600;
+    color: var(--text);
+    font-size: .95rem;
+  }
+  .risk-severity {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    background: color-mix(in srgb, var(--risk-color) 18%, transparent);
+    color: var(--risk-color);
+    flex-shrink: 0;
+  }
+  .risk-card .risk-mitigation {
+    font-size: .88rem;
+    color: var(--text-soft);
+    margin-top: 6px;
+    grid-column: 1 / -1;
+    line-height: 1.5;
+  }
+  .risk-card .risk-mitigation .lbl {
+    font-weight: 600;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    margin-right: 4px;
+  }
+  .risk-card .risk-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    grid-column: 1 / -1;
+    font-size: .8rem;
+    color: var(--text-mute);
+  }
+  .risk-card .risk-meta .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .risk-card .risk-meta .status-chip {
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    background: color-mix(in srgb, var(--status-color, var(--c-f3)) 16%, transparent);
+    color: var(--status-color, var(--c-f3));
+  }
+  .risk-card .risk-remove {
+    background: transparent;
+    border: none;
+    color: var(--text-mute);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: background .15s ease, color .15s ease, opacity .15s ease;
+    align-self: start;
+  }
+  .risk-card:hover .risk-remove,
+  .risk-card:focus-within .risk-remove { opacity: 1; }
+  .risk-card .risk-remove:hover {
+    background: color-mix(in srgb, var(--c-f7) 18%, transparent);
+    color: var(--c-f7);
+  }
+  .risks-empty {
+    padding: 14px;
+    text-align: center;
+    background: var(--bg-elev);
+    border-radius: var(--radius-sm);
+    font-size: .88rem;
+    color: var(--text-mute);
+    border: 1px dashed var(--border);
+    margin-bottom: 12px;
+  }
+  .modal-body select {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: .92rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .modal-body select:focus {
+    border-color: var(--accent, var(--c-f3));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--c-f3)) 25%, transparent);
+  }
+
   /* ===== "Add task" trigger button ===== */
   .add-task-btn {
     display: block;
@@ -932,6 +1083,49 @@
       <textarea id="modalTaskInput" placeholder="Describí la tarea…" maxlength="240" required></textarea>
       <div class="modal-footer">
         <button type="button" class="btn-secondary" id="taskModalCancel">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="riskModal" hidden>
+  <div class="modal" role="dialog" aria-labelledby="riskModalTitle" aria-modal="true">
+    <div class="modal-header">
+      <h3 id="riskModalTitle">Agregar nuevo riesgo</h3>
+      <button class="modal-close" id="riskModalClose" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="riskModalForm" class="modal-body" autocomplete="off">
+      <div class="modal-field">
+        <label for="modalRiskTitle" class="modal-label">Título del riesgo</label>
+        <input type="text" id="modalRiskTitle" placeholder="Ej: Falta de definición de alcance" maxlength="120" required />
+      </div>
+      <div class="modal-field">
+        <label for="modalRiskSeverity" class="modal-label">Severidad</label>
+        <select id="modalRiskSeverity" required>
+          <option value="baja">Baja</option>
+          <option value="media" selected>Media</option>
+          <option value="alta">Alta</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label for="modalRiskMitigation" class="modal-label">Plan de mitigación</label>
+        <textarea id="modalRiskMitigation" placeholder="Cómo vamos a prevenirlo o atacarlo si ocurre…" maxlength="400"></textarea>
+      </div>
+      <div class="modal-field">
+        <label for="modalRiskOwner" class="modal-label">Responsable</label>
+        <input type="text" id="modalRiskOwner" placeholder="Ej: Sponsor / PM / María González" maxlength="80" />
+      </div>
+      <div class="modal-field">
+        <label for="modalRiskStatus" class="modal-label">Estado</label>
+        <select id="modalRiskStatus" required>
+          <option value="abierto" selected>Abierto</option>
+          <option value="mitigado">Mitigado</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="riskModalCancel">Cancelar</button>
         <button type="submit" class="btn-primary">Guardar</button>
       </div>
     </form>
@@ -1293,6 +1487,37 @@ function removeDocFrom(pid, docId) {
   if (idx >= 0) docs.splice(idx, 1);
   saveState();
 }
+function getPhaseRisks(pid) {
+  if (state.phaseData[pid] && state.phaseData[pid].risks) return state.phaseData[pid].risks;
+  return [];
+}
+function ensurePhaseRisks(pid) {
+  if (!state.phaseData[pid]) state.phaseData[pid] = {};
+  if (!state.phaseData[pid].risks) state.phaseData[pid].risks = [];
+  return state.phaseData[pid].risks;
+}
+function addRiskTo(pid, risk) {
+  const risks = ensurePhaseRisks(pid);
+  risks.push({ id: newId("r"), ...risk });
+  saveState();
+}
+function removeRiskFrom(pid, riskId) {
+  const risks = ensurePhaseRisks(pid);
+  const idx = risks.findIndex(r => r.id === riskId);
+  if (idx >= 0) risks.splice(idx, 1);
+  saveState();
+}
+const SEVERITY_META = {
+  baja:  { label: "Baja",  color: "var(--c-f4)" },
+  media: { label: "Media", color: "var(--c-f8)" },
+  alta:  { label: "Alta",  color: "var(--c-f7)" }
+};
+const STATUS_META = {
+  abierto:  { label: "Abierto",  color: "var(--c-f7)" },
+  mitigado: { label: "Mitigado", color: "var(--c-f3)" },
+  cerrado:  { label: "Cerrado",  color: "var(--c-f4)" }
+};
+
 function normalizeUrl(raw) {
   const v = raw.trim();
   if (!v) return "";
@@ -1434,6 +1659,7 @@ function renderDetail() {
   const tasks = getPhaseTasks(p.id);
   const tools = getPhaseTools(p.id);
   const docs = getPhaseDocs(p.id);
+  const risks = getPhaseRisks(p.id);
   const prog = phaseProgress(p.id);
   const matchesFilters = phaseMatchesFilters(p);
 
@@ -1450,6 +1676,7 @@ function renderDetail() {
             <span class="chip">📌 ${tasks.length} tareas</span>
             <span class="chip">🛠️ ${tools.length} herramientas</span>
             <span class="chip">📎 ${docs.length} ${docs.length === 1 ? "documento" : "documentos"}</span>
+            <span class="chip">⚠️ ${risks.length} ${risks.length === 1 ? "riesgo" : "riesgos"}</span>
             <span class="chip" style="background:color-mix(in srgb, ${p.color} 20%, transparent);color:${p.color};font-weight:600;">${prog}% completado</span>
           </div>
         </div>
@@ -1534,6 +1761,33 @@ function renderDetail() {
         ${!matchesFilters ? `<div style="margin-top:14px;padding:10px 12px;background:var(--bg-soft);border-radius:8px;font-size:.85rem;color:var(--text-mute);">⚠️ Esta fase no coincide con los filtros activos. Mostrándola igualmente porque la seleccionaste.</div>` : ""}
       </div>
     </div>
+
+    <div class="risks-section">
+      <h3>⚠️ Riesgos identificados</h3>
+      ${risks.length === 0
+        ? `<div class="risks-empty">Sin riesgos cargados. Identificá los principales de esta fase y agregalos abajo.</div>`
+        : `<ul class="risks-list">
+            ${risks.map(r => {
+              const sev = SEVERITY_META[r.severity] || SEVERITY_META.media;
+              const st  = STATUS_META[r.status] || STATUS_META.abierto;
+              return `
+                <li class="risk-card" style="--risk-color:${sev.color};--status-color:${st.color}">
+                  <div class="risk-head">
+                    <span class="risk-severity">${sev.label}</span>
+                    <span class="risk-title">${escapeHtml(r.title)}</span>
+                  </div>
+                  <button class="risk-remove" data-remove-risk="${r.id}" title="Eliminar riesgo" aria-label="Eliminar riesgo">✕</button>
+                  ${r.mitigation ? `<div class="risk-mitigation"><span class="lbl">Mitigación</span> ${escapeHtml(r.mitigation)}</div>` : ""}
+                  <div class="risk-meta">
+                    ${r.owner ? `<span class="meta-item">👤 ${escapeHtml(r.owner)}</span>` : ""}
+                    <span class="meta-item"><span class="status-chip">${st.label}</span></span>
+                  </div>
+                </li>`;
+            }).join("")}
+          </ul>`
+      }
+      <button type="button" class="add-task-btn" id="openRiskModalBtn">+ Agregar riesgo</button>
+    </div>
   `;
 
   // Checkbox toggles
@@ -1597,6 +1851,23 @@ function renderDetail() {
   if (openDocBtn) {
     openDocBtn.addEventListener("click", () => openDocModal(p.id));
   }
+
+  // Add risk (open modal)
+  const openRiskBtn = detail.querySelector("#openRiskModalBtn");
+  if (openRiskBtn) {
+    openRiskBtn.addEventListener("click", () => openRiskModal(p.id));
+  }
+
+  // Remove risk
+  detail.querySelectorAll("[data-remove-risk]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const rid = btn.dataset.removeRisk;
+      if (!confirm("¿Eliminar este riesgo?")) return;
+      removeRiskFrom(p.id, rid);
+      renderDetail();
+    });
+  });
 
   // Add tool (open modal)
   const openToolBtn = detail.querySelector("#openToolModalBtn");
@@ -1773,6 +2044,54 @@ function wireDocModal() {
   });
 }
 
+/* ===== Risk modal ===== */
+let riskModalCurrentPhase = null;
+function openRiskModal(pid) {
+  riskModalCurrentPhase = pid;
+  const phase = PHASES.find(p => p.id === pid);
+  const modalEl = document.querySelector("#riskModal .modal");
+  if (phase) modalEl.style.setProperty("--accent", phase.color);
+  document.getElementById("riskModalTitle").textContent =
+    phase ? `Agregar riesgo · ${phase.name}` : "Agregar nuevo riesgo";
+  document.getElementById("modalRiskTitle").value = "";
+  document.getElementById("modalRiskSeverity").value = "media";
+  document.getElementById("modalRiskMitigation").value = "";
+  document.getElementById("modalRiskOwner").value = "";
+  document.getElementById("modalRiskStatus").value = "abierto";
+  document.getElementById("riskModal").hidden = false;
+  setTimeout(() => document.getElementById("modalRiskTitle").focus(), 30);
+}
+function closeRiskModal() {
+  document.getElementById("riskModal").hidden = true;
+  riskModalCurrentPhase = null;
+}
+function wireRiskModal() {
+  document.getElementById("riskModalClose").addEventListener("click", closeRiskModal);
+  document.getElementById("riskModalCancel").addEventListener("click", closeRiskModal);
+  document.getElementById("riskModal").addEventListener("click", (e) => {
+    if (e.target.id === "riskModal") closeRiskModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !document.getElementById("riskModal").hidden) closeRiskModal();
+  });
+  document.getElementById("riskModalForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("modalRiskTitle").value.trim();
+    if (!title || riskModalCurrentPhase === null) return;
+    const risk = {
+      title,
+      severity: document.getElementById("modalRiskSeverity").value,
+      mitigation: document.getElementById("modalRiskMitigation").value.trim(),
+      owner: document.getElementById("modalRiskOwner").value.trim(),
+      status: document.getElementById("modalRiskStatus").value
+    };
+    const pid = riskModalCurrentPhase;
+    addRiskTo(pid, risk);
+    closeRiskModal();
+    renderDetail();
+  });
+}
+
 /* ===== Init ===== */
 applyTheme();
 renderSummary();
@@ -1784,6 +2103,7 @@ wireFilters();
 wireTaskModal();
 wireToolModal();
 wireDocModal();
+wireRiskModal();
 </script>
 </body>
 </html>
